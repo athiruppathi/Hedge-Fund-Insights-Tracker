@@ -11,3 +11,5 @@ class FundInsightsTrackerItem(scrapy.Item):
     # name = scrapy.Field()
     blackrock_titles = scrapy.Field()
     blackrock_links = scrapy.Field()
+    bridgewater_titles = scrapy.Field()
+    bridgewater_links = scrapy.Field()
