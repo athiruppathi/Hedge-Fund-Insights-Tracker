@@ -15,14 +15,19 @@ class BridgewaterSpider(scrapy.Spider):
 
         items = FundInsightsTrackerItem()
 
-        entry = response.css('.PromoC-title')
-        titles = entry.xpath('.//a/text()')
-        titles_new = titles[:10].extract()
 
-        links = entry.xpath('.//a/@href')
-        links_new = links[:10].extract()
+        entry = response.css('.PromoC-text')
+        titles = entry.xpath('.//*[@class="PromoC-title"]/a/text()')
+        titles_list = titles[:10].extract()
 
-        items['bridgewater_titles'] = titles_new
-        items['bridgewater_links'] = links_new
-        
+        links = entry.xpath('.//*[@class="PromoC-title"]/a/@href')
+        links_list = links[:10].extract()
+
+        dates = entry.xpath('.//*[@class="PromoC-date"]/text()')
+        dates_list = dates[:10].extract()
+
+        items['bridgewater_titles'] = titles_list
+        items['bridgewater_links'] = links_list
+        items['bridgewater_dates'] = dates_list
+
         yield items
