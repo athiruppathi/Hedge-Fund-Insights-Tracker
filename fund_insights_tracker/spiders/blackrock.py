@@ -38,7 +38,7 @@ class BlackrockSpider(scrapy.Spider):
             titles_list_new.append(i)
 
         items['blackrock_titles'] = titles_list_new
-        items['blackrock_links'] = links_list_new
+        items['blackrock_links'] = absolute_url_list
         items['blackrock_dates'] = dates_list
         
         yield items
