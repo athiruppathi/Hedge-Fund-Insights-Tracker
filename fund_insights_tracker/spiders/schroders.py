@@ -6,6 +6,11 @@ class SchrodersSpider(scrapy.Spider):
     name = 'schroders'
     start_urls = ['https://www.schroders.com/en/insights/']
 
+    custom_settings = {
+        'FEED_FORMAT':'json',
+        'FEED_URI':'schroders.json'
+    }
+
     def parse(self, response):
         items = FundInsightsTrackerItem()
 

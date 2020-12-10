@@ -1,12 +1,11 @@
 import scrapy
 from urllib.parse import urljoin
 from ..items import FundInsightsTrackerItem
-
+import re 
 
 class BlackrockSpider(scrapy.Spider):
     name = 'blackrock'
     start_urls = ['https://www.blackrock.com/us/individual/insights']
-
     custom_settings = {
         'FEED_FORMAT':'json',
         'FEED_URI':'blackrock_data.json'
@@ -29,9 +28,17 @@ class BlackrockSpider(scrapy.Spider):
 
         dates = entry.xpath('.//*[@class="attribution-text"]/span[1]/text()')
         dates_list = dates[:6].extract()
+        
+        # Titles Data Cleaning
+        pattern_newline = re.compile("\n")
+        titles_list_new = []
+        for i in titles_list:
+            re.sub(pattern_newline,'',i)
+            i = i.strip()
+            titles_list_new.append(i)
 
-        items['blackrock_titles'] = titles_list
-        items['blackrock_links'] = absolute_url_list
+        items['blackrock_titles'] = titles_list_new
+        items['blackrock_links'] = links_list_new
         items['blackrock_dates'] = dates_list
         
         yield items

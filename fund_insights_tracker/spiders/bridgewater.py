@@ -22,7 +22,7 @@ class BridgewaterSpider(scrapy.Spider):
 
         links = entry.xpath('.//*[@class="PromoC-title"]/a/@href')
         links_list = links[:10].extract()
-
+        
         dates = entry.xpath('.//*[@class="PromoC-date"]/text()')
         dates_list = dates[:10].extract()
 

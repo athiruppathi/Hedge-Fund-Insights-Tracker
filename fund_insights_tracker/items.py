@@ -21,3 +21,7 @@ class FundInsightsTrackerItem(scrapy.Item):
     man_titles = scrapy.Field()
     man_links = scrapy.Field()
     man_dates = scrapy.Field()
+    williamblair_titles = scrapy.Field()
+    williamblair_links = scrapy.Field()
+    twosigma_titles = scrapy.Field()
+    twosigma_links = scrapy.Field()

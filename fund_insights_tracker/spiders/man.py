@@ -5,6 +5,10 @@ from ..items import FundInsightsTrackerItem
 class ManSpider(scrapy.Spider):
     name = 'man'
     start_urls = ['https://www.man.com/maninstitute/']
+    custom_settings = {
+        'FEED_FORMAT':'json',
+        'FEED_URI':'man.json'
+    }
 
     def parse(self, response):
         items = FundInsightsTrackerItem()
@@ -18,7 +22,7 @@ class ManSpider(scrapy.Spider):
         absolute_url_list = []
         for link in links:
             absolute_url = response.follow(link, callback=self.parse)
-            absolute_url_list.append(absolute_url)
+            absolute_url_list.append(absolute_url)   
 
         items['man_titles'] = titles
         items['man_dates'] = dates_list
