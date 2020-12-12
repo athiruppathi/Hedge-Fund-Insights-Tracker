@@ -6,6 +6,10 @@ import re
 class KkrSpider(scrapy.Spider):
     name = 'kkr'
     start_urls = ['https://www.kkr.com/global-perspectives/publications']
+    custom_settings = {
+        'FEED_FORMAT':'json',
+        'FEED_URI':'kkr_data.json'
+    }
 
 
 
@@ -17,7 +21,6 @@ class KkrSpider(scrapy.Spider):
         links = entry.xpath('.//h2/a/@href').extract()
 
         date_first = entry.xpath('.//*[@class="__mediaPost_list first-post"]/span/strong/text()').extract()
-        #dates_entries = entry.xpath('.//*[@class="__mediaPost_list "]/*[@class="time"]/text()').extract()
         dates_entries = entry.xpath('.//div/div[2]/span/text()').extract()
 
         # Dates Data Cleaning
