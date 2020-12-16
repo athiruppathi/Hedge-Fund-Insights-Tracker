@@ -8,7 +8,7 @@ class TwosigmaSpider(scrapy.Spider):
 
     custom_settings = {
         'FEED_FORMAT':'json',
-        'FEED_URI':'twosigma.json'
+        'FEED_URI':'twosigma_data.json'
     }
 
     def parse(self, response):
@@ -18,6 +18,11 @@ class TwosigmaSpider(scrapy.Spider):
         titles = entry.xpath('.//h3/a/text()').extract()
         links = entry.xpath('.//h3/a/@href').extract()
 
+        dates = []
+        for i in range(len(titles)):
+            dates.append('---')
+
         items['twosigma_titles'] = titles
         items['twosigma_links'] = links
+        items['twosigma_dates'] = dates
         yield items

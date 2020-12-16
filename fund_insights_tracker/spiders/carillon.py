@@ -7,7 +7,7 @@ class CarillonSpider(scrapy.Spider):
     start_urls = ['https://www.carillontower.com/our-thinking']
     custom_settings = {
         'FEED_FORMAT':'json',
-        'FEED_URI':'carillon.json'
+        'FEED_URI':'carillon_data.json'
     }
 
     def parse(self, response):
@@ -22,8 +22,13 @@ class CarillonSpider(scrapy.Spider):
         for link in links:
             absolute_url = response.follow(link, callback=self.parse)
             absolute_url_list.append(absolute_url)
+
+        dates = []
+        for i in range(len(titles)):
+            dates.append('---')
         
         items['carillon_titles'] = titles
         items['carillon_links'] = absolute_url_list
+        items['carillon_dates'] = dates
 
         yield items

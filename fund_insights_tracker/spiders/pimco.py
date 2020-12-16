@@ -8,7 +8,7 @@ class PimcoSpider(scrapy.Spider):
     start_urls = ['https://www.pimco.com/en-us/insights']
     custom_settings = {
         'FEED_FORMAT':'json',
-        'FEED_URI':'pimco.json'
+        'FEED_URI':'pimco_data.json'
     }
 
     def parse(self, response):

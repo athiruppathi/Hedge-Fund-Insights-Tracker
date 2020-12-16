@@ -7,7 +7,7 @@ class ManSpider(scrapy.Spider):
     start_urls = ['https://www.man.com/maninstitute/']
     custom_settings = {
         'FEED_FORMAT':'json',
-        'FEED_URI':'man.json'
+        'FEED_URI':'man_data.json'
     }
 
     def parse(self, response):

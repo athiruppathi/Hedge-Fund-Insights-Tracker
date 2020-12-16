@@ -8,7 +8,7 @@ class SchrodersSpider(scrapy.Spider):
 
     custom_settings = {
         'FEED_FORMAT':'json',
-        'FEED_URI':'schroders.json'
+        'FEED_URI':'schroders_data.json'
     }
 
     def parse(self, response):

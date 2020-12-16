@@ -8,7 +8,7 @@ class WilliamblairSpider(scrapy.Spider):
 
     custom_settings = {
         'FEED_FORMAT':'json',
-        'FEED_URI':'williamblair.json'
+        'FEED_URI':'williamblair_data.json'
     }
 
     def parse(self, response):
@@ -21,9 +21,14 @@ class WilliamblairSpider(scrapy.Spider):
         for i in links:
             absolute_url = response.follow(i, callback=self.parse)
             absolute_url_list.append(absolute_url)
+
+        dates = []
+        for i in range(len(titles)):
+            dates.append('---')
         
         items['williamblair_titles'] = titles
         items['williamblair_links'] = absolute_url_list
+        items['williamblair_dates'] = dates
 
         yield items
 
