@@ -1,4 +1,5 @@
 import sys
+import PyQt5
 import json 
 import sqlite3
 import os 
@@ -11,13 +12,14 @@ conn = sqlite3.connect('master.db')
 c = conn.cursor()
 
 # Creates table for first time user
-#sqlCommand = '''dfasodfj'''     
-#c.execute(''' CREATE TABLE data (
-#        titles text,
-#        links text,
-#        dates text,
-#        source text) '''
-#)
+sqlCommand = '''SELECT name FROM master.db WHERE type='table' AND name='{data}';'''
+if sqlCommand == False:
+    c.execute(''' CREATE TABLE data (
+        titles text,
+        links text,
+        dates text,
+        source text) '''
+    )
 
 def get_path(dataName):
     '''Gets the directory path of the scraped json data. Must 
@@ -28,8 +30,7 @@ def get_path(dataName):
     return fullPath
 
 def crawl_all():
-    '''Crawls all websites, imports data, updates the master database with new entries, 
-    and deletes the imported json files'''
+    '''Crawls all websites'''
     process = CrawlerProcess()
     process.crawl(blackrock.BlackrockSpider)
     process.crawl(bridgewater.BridgewaterSpider)
@@ -42,58 +43,61 @@ def crawl_all():
     process.crawl(williamblair.WilliamblairSpider)  
     process.start()     
 
-    # Get all paths 
-    fundsList = ['blackrock','bridgewater','carillon', 'kkr','man','pimco','schroders','twosigma','williamblair']
+def update_database():
+    '''imports data, updates the master database with new entries, 
+    and deletes the imported json files'''
+    
+    # Delete old data if it exists
+    fundsList = ['blackrock','bridgewater','carillon',  'kkr','man','pimco','schroders','twosigma','williamblair']
+    for i in fundsList:
+        if os.path.isfile(get_path(i)) == True:
+            os.remove(get_path(i))
+
+    crawl_all()
+
+    # Import Data
     pathsList = []
     for i in fundsList:
-        pathsList.append(get_path(i))  
-    
-    # Import data
+        pathsList.append(get_path(i)) 
 
+    dataTitles = []
+    dataLinks = []
+    dataDates = []
+    for i in pathsList:
+        with open(i) as f:
+            data = json.load(f) # load json data
+            dataDict = data[0]
+            dictToList = list(dataDict.keys())
+            titlesIndex = dictToList[0]
+            dataName = titlesIndex[:-7] # get the name of fund to access dictionary
+
+            dataT = dataDict.get( dataName + '_titles')
+            dataTitles.append(dataT)
+            dataL = dataDict.get(dataName + '_links')
+            dataLinks.append(dataL)
+            dataD = dataDict.get(dataName + '_dates')
+            dataDates.append(dataD)
+
+    # Convert data into a list of tuples
+    completeList = []  # is a list of tuples
+    for i in dataTitles:
+        for j in dataLinks:
+            for k in dataDates:
+                dataTuples = (i,j,k)
+                completeList.append(dataTuples)
+    
+    print(completeList[0][0])
+    print(type(completeList))
 
     # Add data to master database
+    #for i in completeList:
+    #   c.executemany('INSERT INTO data VALUES (?,?,?,?)', data)
 
+    # Remove old files 
+    for i in fundsList:
+       os.remove(get_path(i))
 
+update_database()
 
-    # Remove json files
-    #for i in fundsList:
-    #   os.remove(get_path(i))
-
-#crawl_all()
-
-fundsList = ['blackrock','bridgewater','carillon',  'kkr','man','pimco','schroders','twosigma','williamblair']
-pathsList = []
-for i in fundsList:
-    pathsList.append(get_path(i)) 
-
-print(pathsList)
-
-dataTitles = []
-dataLinks = []
-dataDates = []
-for i in pathsList:
-    with open(i) as f:
-        data = json.load(f) # load json data
-        dataDict = data[0]
-        dictToList = list(dataDict.keys())
-        titlesIndex = dictToList[0]
-        dataName = titlesIndex[:-7] # get the name of fund to access dictionary
-
-        dataT = dataDict.get( dataName + '_titles')
-        dataTitles.append(dataT)
-        dataL = dataDict.get(dataName + '_links')
-        dataLinks.append(dataL)
-        dataD = dataDict.get(dataName + '_dates')
-        dataDates.append(dataD)
-
-# Add data to master database - only add if it's new data
-#c.execute('''SELECT ''')
-
-
-# Remove json files
-    for i in pathsList:
-        os.remove(i)
-print('arjun')
 conn.commit()
-
 conn.close()
