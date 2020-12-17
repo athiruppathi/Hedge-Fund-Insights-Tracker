@@ -11,17 +11,16 @@ conn = sqlite3.connect('master.db')
 c = conn.cursor()
 
 # Creates table for first time user
-sqlCommand = '''dfasodfj'''     
-
-c.execute(''' CREATE TABLE data (
-        titles text,
-        links text,
-        dates text,
-        source text) '''
-)
+#sqlCommand = '''dfasodfj'''     
+#c.execute(''' CREATE TABLE data (
+#        titles text,
+#        links text,
+#        dates text,
+#        source text) '''
+#)
 
 def get_path(dataName):
-    '''Gets the directory path of the scraped data. Must 
+    '''Gets the directory path of the scraped json data. Must 
     call the function with dataName as a string'''
     currentDirectory = os.getcwd()
     partialPath = '\\' + dataName + '_data.json'
@@ -29,7 +28,7 @@ def get_path(dataName):
     return fullPath
 
 def crawl_all():
-    '''Crawls all websites, updates the master database with new entries, 
+    '''Crawls all websites, imports data, updates the master database with new entries, 
     and deletes the imported json files'''
     process = CrawlerProcess()
     process.crawl(blackrock.BlackrockSpider)
@@ -44,25 +43,57 @@ def crawl_all():
     process.start()     
 
     # Get all paths 
-    fundsList = ['blackrock','bridgewater','carillon',  'kkr','man','pimco','schroders','twosigma','williamblair']
+    fundsList = ['blackrock','bridgewater','carillon', 'kkr','man','pimco','schroders','twosigma','williamblair']
     pathsList = []
     for i in fundsList:
         pathsList.append(get_path(i))  
     
-
     # Import data
-    #for i in paths
 
 
     # Add data to master database
 
 
 
-    # Remove scraped data
+    # Remove json files
     #for i in fundsList:
     #   os.remove(get_path(i))
 
-crawl_all()
+#crawl_all()
+
+fundsList = ['blackrock','bridgewater','carillon',  'kkr','man','pimco','schroders','twosigma','williamblair']
+pathsList = []
+for i in fundsList:
+    pathsList.append(get_path(i)) 
+
+print(pathsList)
+
+dataTitles = []
+dataLinks = []
+dataDates = []
+for i in pathsList:
+    with open(i) as f:
+        data = json.load(f) # load json data
+        dataDict = data[0]
+        dictToList = list(dataDict.keys())
+        titlesIndex = dictToList[0]
+        dataName = titlesIndex[:-7] # get the name of fund to access dictionary
+
+        dataT = dataDict.get( dataName + '_titles')
+        dataTitles.append(dataT)
+        dataL = dataDict.get(dataName + '_links')
+        dataLinks.append(dataL)
+        dataD = dataDict.get(dataName + '_dates')
+        dataDates.append(dataD)
+
+# Add data to master database - only add if it's new data
+#c.execute('''SELECT ''')
+
+
+# Remove json files
+    for i in pathsList:
+        os.remove(i)
+print('arjun')
 conn.commit()
 
 conn.close()
