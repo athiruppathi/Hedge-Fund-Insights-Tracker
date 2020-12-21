@@ -11,15 +11,19 @@ from scrapy.crawler import CrawlerProcess
 conn = sqlite3.connect('master.db')
 c = conn.cursor()
 
-# Creates table for first time user
-sqlCommand = '''SELECT name FROM master.db WHERE type='table' AND name='{data}';'''
-if sqlCommand == False:
-    c.execute(''' CREATE TABLE data (
-        titles text,
-        links text,
-        dates text,
-        source text) '''
-    )
+# Create data table
+c.execute('''CREATE TABLE IF NOT EXISTS data (
+    titles text,
+    links text,
+    dates text
+    )''')
+
+# Create favorites table
+c.execute('''CREATE TABLE IF NOT EXISTS favorites (
+    titles text,
+    links text,
+    dates text
+)''')
 
 def get_path(dataName):
     '''Gets the directory path of the scraped json data. Must 
@@ -77,25 +81,44 @@ def update_database():
             dataLinks.append(dataL)
             dataD = dataDict.get(dataName + '_dates')
             dataDates.append(dataD)
-
-    # Convert data into a list of tuples
-    completeList = []  # is a list of tuples
-    for i in dataTitles:
-        for j in dataLinks:
-            for k in dataDates:
-                dataTuples = (i,j,k)
-                completeList.append(dataTuples)
     
-    print(completeList[0][0])
-    print(type(completeList))
+    dataTitles1 = []
+    for i in dataTitles:
+        for j in i:
+            title = j
+            dataTitles1.append(title)
+    dataLinks1 = []
+    for i in dataLinks:
+        for j in i:
+            link = j
+            dataLinks1.append(link)
+    dataDates1 = []
+    for i in dataDates:
+        for j in i:
+            date = j
+            dataDates1.append(date)         
+    
+    # Covert data into a list of tuples
+    completeList = []
+    for i in range(len(dataTitles1)):
+        titleNew = dataTitles1[i]
+        linkNew = dataLinks1[i]
+        linksPattern = re.compile('<Request GET ')
+        if re.match(linksPattern, linkNew) == True:
+            linkNew = re.sub(linksPattern, '', linkNew)
+            linkNew = linkNew[:-1]
+        dateNew = dataDates1[i]
+        tup = (titleNew,linkNew,dateNew)
+        completeList.append(tup)
 
-    # Add data to master database
-    #for i in completeList:
-    #   c.executemany('INSERT INTO data VALUES (?,?,?,?)', data)
+    print(len(completeList))
+
+    # Add data to data table
+    c.executemany('INSERT INTO data VALUES (?,?,?)', completeList)
 
     # Remove old files 
     for i in fundsList:
-       os.remove(get_path(i))
+      os.remove(get_path(i))
 
 update_database()
 
