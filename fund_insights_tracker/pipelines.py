@@ -6,8 +6,6 @@
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
-import sqlite3
-
 
 class FundInsightsTrackerPipeline:
     def process_item(self, item, spider):

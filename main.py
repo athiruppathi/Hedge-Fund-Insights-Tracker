@@ -11,8 +11,8 @@ from scrapy.crawler import CrawlerProcess
 conn = sqlite3.connect('master.db')
 c = conn.cursor()
 
-# Create data table
-c.execute('''CREATE TABLE IF NOT EXISTS data (
+# Create main data table
+c.execute('''CREATE TABLE IF NOT EXISTS main (
     titles text,
     links text,
     dates text
@@ -104,21 +104,21 @@ def update_database():
         titleNew = dataTitles1[i]
         linkNew = dataLinks1[i]
         linksPattern = re.compile('<Request GET ')
-        if re.match(linksPattern, linkNew) == True:
-            linkNew = re.sub(linksPattern, '', linkNew)
+        isPatternMatch = re.match('<Request GET ', linkNew)
+        if isPatternMatch:
+            linkNew = linksPattern.sub('', linkNew)
             linkNew = linkNew[:-1]
         dateNew = dataDates1[i]
         tup = (titleNew,linkNew,dateNew)
         completeList.append(tup)
 
-    print(len(completeList))
-
-    # Add data to data table
-    c.executemany('INSERT INTO data VALUES (?,?,?)', completeList)
+    # Add data to main data table
+    c.executemany('INSERT INTO main VALUES (?,?,?)',completeList)
+    c.execute('DELETE FROM main WHERE rowid NOT IN (SELECT min(rowid) FROM main GROUP BY titles, links)')
 
     # Remove old files 
     for i in fundsList:
-      os.remove(get_path(i))
+        os.remove(get_path(i))
 
 update_database()
 
