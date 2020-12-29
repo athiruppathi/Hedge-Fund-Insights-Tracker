@@ -123,8 +123,7 @@ def update_database():
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 #for i in c.execute(''' SELECT * FROM main'''):
-    # add i[0] entry to table with a command that opens webbrower to 
-
+#    print(i)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -159,15 +158,6 @@ class Ui_MainWindow(object):
         columnHeader = self.allTable.horizontalHeader()
         columnHeader.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         columnHeader.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-
-        rowPosition = self.allTable.rowCount()
-        for i in c.execute(''' SELECT * FROM main'''):
-            cellLabel = i[0]
-            cellLink = i[1]
-            cellDate = i[2]
-            #self.allTable.setItem(rowPosition , 0, QtGui.QTableWidgetItem(cellLabel))
-            #self.allTable.setItem(rowPosition , 1, QtGui.QTableWidgetItem(cellDate))
-
         self.horizontalLayout.addWidget(self.allTable)
         self.tabs.addTab(self.All, "")
         self.Favorites = QtWidgets.QWidget()
@@ -182,10 +172,21 @@ class Ui_MainWindow(object):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-
         self.retranslateUi(MainWindow)
         self.tabs.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        #rowPosition = self.allTable.rowCount()
+        rowPosition = 0 
+
+        # Populate the all table
+        for i in c.execute(''' SELECT * FROM main'''):
+            cellTitle = QtWidgets.QTableWidgetItem(i[0])
+            cellLink = i[1]
+            cellDate = QtWidgets.QTableWidgetItem(i[2])
+            self.allTable.setItem(rowPosition , 0, cellTitle)
+            self.allTable.setItem(rowPosition , 1, cellDate)
+            rowPosition += 1 
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
