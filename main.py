@@ -122,46 +122,81 @@ def update_database():
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+#for i in c.execute(''' SELECT * FROM main'''):
+    # add i[0] entry to table with a command that opens webbrower to 
+
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(882, 772)
+        MainWindow.resize(1032, 770)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
-        self.tableWidget.setGeometry(QtCore.QRect(10, 60, 861, 681))
-        self.tableWidget.setObjectName("tableWidget")
-        self.tableWidget.setColumnCount(0)
-        self.tableWidget.setRowCount(0)
-        self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(20, 0, 351, 61))
-        self.label.setTextFormat(QtCore.Qt.PlainText)
-        self.label.setObjectName("label")
-        self.verticalScrollBar = QtWidgets.QScrollBar(self.centralwidget)
-        self.verticalScrollBar.setGeometry(QtCore.QRect(850, 60, 21, 671))
-        self.verticalScrollBar.setOrientation(QtCore.Qt.Vertical)
-        self.verticalScrollBar.setObjectName("verticalScrollBar")
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(770, 30, 75, 23))
-        self.pushButton.setObjectName("pushButton")
+        self.headingLabel = QtWidgets.QLabel(self.centralwidget)
+        self.headingLabel.setGeometry(QtCore.QRect(10, 0, 271, 41))
+        self.headingLabel.setObjectName("headingLabel")
+        self.refreshButton = QtWidgets.QPushButton(self.centralwidget)
+        self.refreshButton.setGeometry(QtCore.QRect(730, 20, 298, 31))
+        self.refreshButton.setObjectName("refreshButton")
+        self.refreshButton.clicked.connect(self.refresh_command)
+
+
+        self.tabs = QtWidgets.QTabWidget(self.centralwidget)
+        self.tabs.setGeometry(QtCore.QRect(10, 40, 1021, 711))
+        self.tabs.setObjectName("tabs")
+        self.All = QtWidgets.QWidget()
+        self.All.setObjectName("All")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.All)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+
+        self.allTable = QtWidgets.QTableWidget(self.All)
+        self.allTable.setObjectName("allTable")
+        self.allTable.setColumnCount(2)
+        c.execute(''' SELECT * FROM main''')
+        tableLen = len(c.fetchall())
+        self.allTable.setRowCount(tableLen)
+        self.allTable.setHorizontalHeaderLabels(['Article','Date'])
+        columnHeader = self.allTable.horizontalHeader()
+        columnHeader.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        columnHeader.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+
+        rowPosition = self.allTable.rowCount()
+        for i in c.execute(''' SELECT * FROM main'''):
+            cellLabel = i[0]
+            cellLink = i[1]
+            cellDate = i[2]
+            #self.allTable.setItem(rowPosition , 0, QtGui.QTableWidgetItem(cellLabel))
+            #self.allTable.setItem(rowPosition , 1, QtGui.QTableWidgetItem(cellDate))
+
+        self.horizontalLayout.addWidget(self.allTable)
+        self.tabs.addTab(self.All, "")
+        self.Favorites = QtWidgets.QWidget()
+        self.Favorites.setObjectName("Favorites")
+        self.favoritesTable = QtWidgets.QTableWidget(self.Favorites)
+        self.favoritesTable.setGeometry(QtCore.QRect(10, 10, 971, 661))
+        self.favoritesTable.setObjectName("favoritesTable")
+        self.favoritesTable.setColumnCount(0) 
+        self.favoritesTable.setRowCount(0) 
+        self.tabs.addTab(self.Favorites, "") 
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 882, 22))
-        self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
+        self.tabs.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.label.setText(_translate("MainWindow", "Hedge Fund Insights Tracker"))
-        self.pushButton.setText(_translate("MainWindow", "Refresh"))
+        self.headingLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:16pt;\">Hedge Fund Insights Tracker</span></p></body></html>"))
+        self.refreshButton.setText(_translate("MainWindow", "Refresh"))
+        self.tabs.setTabText(self.tabs.indexOf(self.All), _translate("MainWindow", "All"))
+        self.tabs.setTabText(self.tabs.indexOf(self.Favorites), _translate("MainWindow", "Favorites"))
 
+    def refresh_command(self):
+        update_database()
 
 if __name__ == "__main__":
     import sys
@@ -171,7 +206,6 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
-
 
 conn.commit()
 conn.close()
