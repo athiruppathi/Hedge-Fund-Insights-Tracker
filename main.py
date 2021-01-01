@@ -183,17 +183,20 @@ class Ui_MainWindow(object):
             self.allTable.setItem(rowPosition , 1, cellDate)
             rowPosition += 1
 
-        self.allTable.cellDoubleClicked.connect(self.open_link)
+        self.allTable.cellDoubleClicked.connect(self.open_link)  # connects to open_link function
+        self.allTable.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
     def open_link(self, row, column):
-        #item = self.allTable.itemAt(self.row, self.column)
         item = self.allTable.item(row,column)
         itemTxt = item.text()
-        c.execute(''' SELECT links FROM main WHERE titles = ?''', itemTxt )
-        url = c.fetchone()
-        print(url)
+        c.execute('SELECT links FROM main WHERE titles = (?)', (itemTxt,))
+        result = c.fetchall()
+        url = result[0][0]
         webbrowser.open(url, new=0)
 
+    def refresh_command(self):
+        update_database()
+        
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -202,8 +205,7 @@ class Ui_MainWindow(object):
         self.tabs.setTabText(self.tabs.indexOf(self.All), _translate("MainWindow", "All"))
         self.tabs.setTabText(self.tabs.indexOf(self.Favorites), _translate("MainWindow", "Favorites"))
 
-    def refresh_command(self):
-        update_database()
+
 
 if __name__ == "__main__":
     import sys
