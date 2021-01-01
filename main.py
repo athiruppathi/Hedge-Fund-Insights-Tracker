@@ -125,12 +125,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1032, 770)
+        MainWindow.resize(1300, 1000)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.headingLabel = QtWidgets.QLabel(self.centralwidget)
-        self.headingLabel.setGeometry(QtCore.QRect(10, 0, 271, 41))
-        self.headingLabel.setObjectName("headingLabel")
+        #self.headingLabel = QtWidgets.QLabel(self.centralwidget)
+        #self.headingLabel.setGeometry(QtCore.QRect(10, 0, 271, 41))
+        #self.headingLabel.adjustSize()
+        #self.headingLabel.setObjectName("headingLabel")
         self.refreshButton = QtWidgets.QPushButton(self.centralwidget)
         self.refreshButton.setGeometry(QtCore.QRect(730, 20, 298, 31))
         self.refreshButton.setObjectName("refreshButton")
@@ -161,10 +162,14 @@ class Ui_MainWindow(object):
         self.favoritesTable = QtWidgets.QTableWidget(self.Favorites)
         self.favoritesTable.setGeometry(QtCore.QRect(10, 10, 971, 661))
         self.favoritesTable.setObjectName("favoritesTable")
-        self.favoritesTable.setColumnCount(0)
+        self.favoritesTable.setColumnCount(2)
+        favColumnHeader = self.favoritesTable.horizontalHeader()
+        favColumnHeader.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+        favColumnHeader.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
         c.execute(''' SELECT * FROM favorites''')
         favTableLen = len(c.fetchall())
-        self.favoritesTable.setRowCount(favTableLen) 
+        self.favoritesTable.setRowCount(favTableLen)
+        self.favoritesTable.setHorizontalHeaderLabels(['Article','Date'])
         self.tabs.addTab(self.Favorites, "") 
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -177,14 +182,30 @@ class Ui_MainWindow(object):
         # Populate the all table
         rowPosition = 0 
         for i in c.execute(''' SELECT * FROM main'''):
+           cellTitle = QtWidgets.QTableWidgetItem(i[0])
+           cellDate = QtWidgets.QTableWidgetItem(i[2])
+           self.allTable.setItem(rowPosition , 0, cellTitle)
+           self.allTable.setItem(rowPosition , 1, cellDate)
+           rowPosition += 1
+
+        self.allTable.cellDoubleClicked.connect(self.open_link)  # connects to open_link function
+        self.allTable.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers) # make table cells non-editable
+        self.favoritesTable.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.tabs.resize(1200, 1000)
+
+
+        # Resize table
+        #self.allTable.setGeometry()
+
+    def set_cell_items(self):
+        # Update the all table
+        rowPosition = 0 
+        for i in c.execute(''' SELECT * FROM main'''):
             cellTitle = QtWidgets.QTableWidgetItem(i[0])
             cellDate = QtWidgets.QTableWidgetItem(i[2])
             self.allTable.setItem(rowPosition , 0, cellTitle)
             self.allTable.setItem(rowPosition , 1, cellDate)
             rowPosition += 1
-
-        self.allTable.cellDoubleClicked.connect(self.open_link)  # connects to open_link function
-        self.allTable.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
     def open_link(self, row, column):
         item = self.allTable.item(row,column)
@@ -199,17 +220,18 @@ class Ui_MainWindow(object):
         
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.headingLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:16pt;\">Hedge Fund Insights</span></p></body></html>"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Hedge Fund Insights"))
+        #self.headingLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:16pt;\">Hedge Fund Insights</span></p></body></html>"))
         self.refreshButton.setText(_translate("MainWindow", "Refresh"))
         self.tabs.setTabText(self.tabs.indexOf(self.All), _translate("MainWindow", "All"))
         self.tabs.setTabText(self.tabs.indexOf(self.Favorites), _translate("MainWindow", "Favorites"))
 
-
-
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
+    screen = app.primaryScreen()
+    size = screen.size()
+    rect = screen.availableGeometry()
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
