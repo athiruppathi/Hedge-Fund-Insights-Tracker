@@ -122,9 +122,6 @@ def update_database():
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-#for i in c.execute(''' SELECT * FROM main'''):
-#    print(i)
-
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -138,22 +135,21 @@ class Ui_MainWindow(object):
         self.refreshButton.setGeometry(QtCore.QRect(730, 20, 298, 31))
         self.refreshButton.setObjectName("refreshButton")
         self.refreshButton.clicked.connect(self.refresh_command)
-
-
+        self.refreshButton.setFont(QtGui.QFont('Arial',12))
         self.tabs = QtWidgets.QTabWidget(self.centralwidget)
         self.tabs.setGeometry(QtCore.QRect(10, 40, 1021, 711))
         self.tabs.setObjectName("tabs")
+        self.tabs.setFont(QtGui.QFont('Arial',12))
         self.All = QtWidgets.QWidget()
         self.All.setObjectName("All")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.All)
         self.horizontalLayout.setObjectName("horizontalLayout")
-
         self.allTable = QtWidgets.QTableWidget(self.All)
         self.allTable.setObjectName("allTable")
         self.allTable.setColumnCount(2)
         c.execute(''' SELECT * FROM main''')
-        tableLen = len(c.fetchall())
-        self.allTable.setRowCount(tableLen)
+        allTableLen = len(c.fetchall())
+        self.allTable.setRowCount(allTableLen)
         self.allTable.setHorizontalHeaderLabels(['Article','Date'])
         columnHeader = self.allTable.horizontalHeader()
         columnHeader.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
@@ -165,8 +161,10 @@ class Ui_MainWindow(object):
         self.favoritesTable = QtWidgets.QTableWidget(self.Favorites)
         self.favoritesTable.setGeometry(QtCore.QRect(10, 10, 971, 661))
         self.favoritesTable.setObjectName("favoritesTable")
-        self.favoritesTable.setColumnCount(0) 
-        self.favoritesTable.setRowCount(0) 
+        self.favoritesTable.setColumnCount(0)
+        c.execute(''' SELECT * FROM favorites''')
+        favTableLen = len(c.fetchall())
+        self.favoritesTable.setRowCount(favTableLen) 
         self.tabs.addTab(self.Favorites, "") 
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -175,23 +173,31 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.tabs.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        #rowPosition = self.allTable.rowCount()
-        rowPosition = 0 
-
+        
         # Populate the all table
+        rowPosition = 0 
         for i in c.execute(''' SELECT * FROM main'''):
             cellTitle = QtWidgets.QTableWidgetItem(i[0])
-            cellLink = i[1]
             cellDate = QtWidgets.QTableWidgetItem(i[2])
             self.allTable.setItem(rowPosition , 0, cellTitle)
             self.allTable.setItem(rowPosition , 1, cellDate)
-            rowPosition += 1 
+            rowPosition += 1
 
+        self.allTable.cellDoubleClicked.connect(self.open_link)
+
+    def open_link(self, row, column):
+        #item = self.allTable.itemAt(self.row, self.column)
+        item = self.allTable.item(row,column)
+        itemTxt = item.text()
+        c.execute(''' SELECT links FROM main WHERE titles = ?''', itemTxt )
+        url = c.fetchone()
+        print(url)
+        webbrowser.open(url, new=0)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.headingLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:16pt;\">Hedge Fund Insights Tracker</span></p></body></html>"))
+        self.headingLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:16pt;\">Hedge Fund Insights</span></p></body></html>"))
         self.refreshButton.setText(_translate("MainWindow", "Refresh"))
         self.tabs.setTabText(self.tabs.indexOf(self.All), _translate("MainWindow", "All"))
         self.tabs.setTabText(self.tabs.indexOf(self.Favorites), _translate("MainWindow", "Favorites"))
