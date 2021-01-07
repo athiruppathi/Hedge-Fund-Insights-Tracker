@@ -96,11 +96,11 @@ def update_database():
     for i in dataDates:
         for j in i:
             date = j
-            dataDates1.append(date)         
+            dataDates1.append(date)  
     
     # Covert data into a list of tuples
     completeList = []
-    for i in range(len(dataTitles1)):
+    for i in range(len(dataTitles1[0])):
         titleNew = dataTitles1[i]
         linkNew = dataLinks1[i]
         linksPattern = re.compile('<Request GET ')
@@ -112,9 +112,17 @@ def update_database():
         tup = (titleNew,linkNew,dateNew)
         completeList.append(tup)
 
+
     # Add data to main data table
-    c.executemany('INSERT INTO main VALUES (?,?,?)',completeList)
-    c.execute('DELETE FROM main WHERE rowid NOT IN (SELECT min(rowid) FROM main GROUP BY titles, links)')
+    for i in completeList:
+        #c.execute('INSERT INTO main VALUES (?,?,?)',i)
+        c.execute('INSERT INTO main (titles) VALUES (?)', (i[0],))
+        c.execute('INSERT INTO main (links) VALUES (?)', (i[1],))
+        c.execute('INSERT INTO main (dates) VALUES (?)', (i[2],))
+        conn.commit()
+    #c.executemany('INSERT INTO main (titles,links,dates) VALUES (?,?,?)',completeList)
+    #c.execute('DELETE FROM main WHERE rowid NOT IN (SELECT min(rowid) FROM main GROUP BY titles, links)')
+    
 
     # Remove old files 
     for i in fundsList:
@@ -193,20 +201,6 @@ class Ui_MainWindow(object):
         self.favoritesTable.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tabs.resize(1200, 1000)
 
-
-        # Resize table
-        #self.allTable.setGeometry()
-
-    def set_cell_items(self):
-        # Update the all table
-        rowPosition = 0 
-        for i in c.execute(''' SELECT * FROM main'''):
-            cellTitle = QtWidgets.QTableWidgetItem(i[0])
-            cellDate = QtWidgets.QTableWidgetItem(i[2])
-            self.allTable.setItem(rowPosition , 0, cellTitle)
-            self.allTable.setItem(rowPosition , 1, cellDate)
-            rowPosition += 1
-
     def open_link(self, row, column):
         item = self.allTable.item(row,column)
         itemTxt = item.text()
@@ -237,6 +231,3 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
-
-conn.commit()
-conn.close()
