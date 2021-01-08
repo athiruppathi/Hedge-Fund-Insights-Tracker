@@ -25,8 +25,9 @@ class ManSpider(scrapy.Spider):
             absolute_url_list.append(absolute_url)   
 
         items['man_titles'] = titles
-        items['man_dates'] = dates_list
         items['man_links'] = absolute_url_list
+        items['man_dates'] = dates_list
+        
         yield items
 
 
