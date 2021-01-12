@@ -98,16 +98,6 @@ def update_database():
         for j in i:
             dataDates1.append(j)
     
-    print('new titles length', len(dataTitles1))
-    print('old titles length', len(dataTitles))
-    print('new links length', len(dataLinks1))
-    print('old links length', len(dataLinks))
-    print('new dates length', len(dataDates1))
-    print('old dates length', len(dataDates))
-    print('\n'.join(dataTitles1))
-    print('\n'.join(dataLinks1))
-
-    
     # Covert data into a list of tuples
     completeList = []
     for i in range(len(dataTitles1)):
@@ -123,13 +113,6 @@ def update_database():
         completeList.append(tup)
 
     # Add data to main data table
-    #for i in completeList:
-        #c.executemany('INSERT INTO main VALUES (?,?,?)',i)
-        # c.execute('INSERT INTO main (titles) VALUES ?', (i[0],))
-        # c.execute('INSERT INTO main (links) VALUES ?', (i[1],))
-        # c.execute('INSERT INTO main (dates) VALUES ?', (i[2],))
-        #conn.commit()
-    print(completeList)
     c.executemany('INSERT INTO main VALUES (?,?,?)', completeList)
     c.execute('DELETE FROM main WHERE rowid NOT IN (SELECT min(rowid) FROM main GROUP BY titles, links)')
     conn.commit()
@@ -143,20 +126,30 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1300, 1000)
+        MainWindow.resize(1250, 1150)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        #self.headingLabel = QtWidgets.QLabel(self.centralwidget)
-        #self.headingLabel.setGeometry(QtCore.QRect(10, 0, 271, 41))
-        #self.headingLabel.adjustSize()
-        #self.headingLabel.setObjectName("headingLabel")
+
+        self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 30, 541, 461))
+        self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout.setObjectName("verticalLayout")
+
+        self.headingLabel = QtWidgets.QLabel(self.verticalLayoutWidget)
+        self.headingLabel.setGeometry(QtCore.QRect(10, 0, 271, 41))
+        self.descriptionLabel = QtWidgets.QLabel(self.verticalLayoutWidget)
+        self.descriptionLabel.setObjectName('descriptionLabel')
+        self.descriptionLabel.setGeometry(QtCore.QRect(10, 50, 271, 41))
+        self.headingLabel.setObjectName("headingLabel")
         self.refreshButton = QtWidgets.QPushButton(self.centralwidget)
         self.refreshButton.setGeometry(QtCore.QRect(730, 20, 298, 31))
         self.refreshButton.setObjectName("refreshButton")
         self.refreshButton.clicked.connect(self.refresh_command)
         self.refreshButton.setFont(QtGui.QFont('Arial',12))
-        self.tabs = QtWidgets.QTabWidget(self.centralwidget)
-        self.tabs.setGeometry(QtCore.QRect(10, 40, 1021, 711))
+        self.tabs = QtWidgets.QTabWidget(self.verticalLayoutWidget)
+        self.tabs.setGeometry(QtCore.QRect(10, 120, 1021, 711))
         self.tabs.setObjectName("tabs")
         self.tabs.setFont(QtGui.QFont('Arial',12))
         self.All = QtWidgets.QWidget()
@@ -189,7 +182,7 @@ class Ui_MainWindow(object):
         self.favoritesTable.setRowCount(favTableLen)
         self.favoritesTable.setHorizontalHeaderLabels(['Article','Date'])
         self.tabs.addTab(self.Favorites, "") 
-        MainWindow.setCentralWidget(self.centralwidget)
+        MainWindow.setCentralWidget(self.verticalLayoutWidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
@@ -225,10 +218,13 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Hedge Fund Insights"))
-        #self.headingLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:16pt;\">Hedge Fund Insights</span></p></body></html>"))
+        self.headingLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:16pt;\">Hedge Fund Insights</span></p></body></html>"))
+        self.headingLabel.adjustSize()
         self.refreshButton.setText(_translate("MainWindow", "Refresh"))
         self.tabs.setTabText(self.tabs.indexOf(self.All), _translate("MainWindow", "All"))
         self.tabs.setTabText(self.tabs.indexOf(self.Favorites), _translate("MainWindow", "Favorites"))
+        self.descriptionLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:10pt;\">Double click the article title to visit the page.\
+            To add an article to the favorites tab, right click and select 'Add to Favorites' </span></p></body></html>"))
 
 if __name__ == "__main__":
     import sys
