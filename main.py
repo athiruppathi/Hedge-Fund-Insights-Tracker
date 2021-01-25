@@ -7,6 +7,11 @@ import re
 import webbrowser
 from fund_insights_tracker.spiders import blackrock, bridgewater, carillon, kkr, man, pimco, schroders, twosigma, williamblair
 from scrapy.crawler import CrawlerProcess
+import tkinter as tk
+
+root = tk.Tk()
+screenWidth = root.winfo_screenwidth()
+screenHeight = root.winfo_screenheight()
 
 conn = sqlite3.connect('master.db')
 c = conn.cursor()
@@ -123,40 +128,44 @@ def update_database():
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1250, 1150)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
+class Ui_Form(object):
+    def setupUi(self, Form):
+        Form.setObjectName("Form")
+        if screenWidth >= 1920 and screenHeight >= 1080:
+            pix1 = 771
+            pix2 = 721
+        else:
+            pix1 = 1497
+            pix2 = 1047          
 
-        self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 30, 541, 461))
+        v1 = pix1
+        v2 = pix2 - 15
+        form1 = pix1 + 3
+        form2 = pix2 + 4
+
+        Form.resize(form1, form2)
+        self.gridLayoutWidget = QtWidgets.QWidget(Form)
+        self.gridLayoutWidget.setGeometry(QtCore.QRect(0, 0, pix1, pix2))
+        self.gridLayoutWidget.setObjectName("gridLayoutWidget")
+        self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
+        self.gridLayout.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout.setObjectName("gridLayout")
+        self.tabWidget = QtWidgets.QTabWidget(self.gridLayoutWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(1)
+        sizePolicy.setVerticalStretch(1)
+        sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
+        self.tabWidget.setSizePolicy(sizePolicy)
+        self.tabWidget.setObjectName("tabWidget")
+        self.allTab = QtWidgets.QWidget()
+        self.allTab.setObjectName("allTab")
+        self.verticalLayoutWidget = QtWidgets.QWidget(self.allTab)
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(0, 0, v1, v2))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout.setObjectName("verticalLayout")
-
-        self.headingLabel = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.headingLabel.setGeometry(QtCore.QRect(10, 0, 271, 41))
-        self.descriptionLabel = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.descriptionLabel.setObjectName('descriptionLabel')
-        self.descriptionLabel.setGeometry(QtCore.QRect(10, 50, 271, 41))
-        self.headingLabel.setObjectName("headingLabel")
-        self.refreshButton = QtWidgets.QPushButton(self.centralwidget)
-        self.refreshButton.setGeometry(QtCore.QRect(730, 20, 298, 31))
-        self.refreshButton.setObjectName("refreshButton")
-        self.refreshButton.clicked.connect(self.refresh_command)
-        self.refreshButton.setFont(QtGui.QFont('Arial',12))
-        self.tabs = QtWidgets.QTabWidget(self.verticalLayoutWidget)
-        self.tabs.setGeometry(QtCore.QRect(10, 120, 1021, 711))
-        self.tabs.setObjectName("tabs")
-        self.tabs.setFont(QtGui.QFont('Arial',12))
-        self.All = QtWidgets.QWidget()
-        self.All.setObjectName("All")
-        self.horizontalLayout = QtWidgets.QHBoxLayout(self.All)
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.allTable = QtWidgets.QTableWidget(self.All)
+        self.allTabVerticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
+        self.allTabVerticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.allTabVerticalLayout.setObjectName("allTabVerticalLayout")
+        self.allTable = QtWidgets.QTableWidget(self.verticalLayoutWidget)
         self.allTable.setObjectName("allTable")
         self.allTable.setColumnCount(2)
         c.execute(''' SELECT * FROM main''')
@@ -166,29 +175,46 @@ class Ui_MainWindow(object):
         columnHeader = self.allTable.horizontalHeader()
         columnHeader.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         columnHeader.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-        self.horizontalLayout.addWidget(self.allTable)
-        self.tabs.addTab(self.All, "")
-        self.Favorites = QtWidgets.QWidget()
-        self.Favorites.setObjectName("Favorites")
-        self.favoritesTable = QtWidgets.QTableWidget(self.Favorites)
-        self.favoritesTable.setGeometry(QtCore.QRect(10, 10, 971, 661))
+        self.allTabVerticalLayout.addWidget(self.allTable)
+        self.tabWidget.addTab(self.allTab, "")
+        self.favoritesTab = QtWidgets.QWidget()
+        self.favoritesTab.setObjectName("favoritesTab")
+        self.verticalLayoutWidget_2 = QtWidgets.QWidget(self.favoritesTab)
+        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(0, 0, v1, v2))
+        self.verticalLayoutWidget_2.setObjectName("verticalLayoutWidget_2")
+        self.favoritesVerticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_2)
+        self.favoritesVerticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.favoritesVerticalLayout.setObjectName("favoritesVerticalLayout")
+        self.favoritesTable = QtWidgets.QTableWidget(self.verticalLayoutWidget_2)
         self.favoritesTable.setObjectName("favoritesTable")
         self.favoritesTable.setColumnCount(2)
         favColumnHeader = self.favoritesTable.horizontalHeader()
         favColumnHeader.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         favColumnHeader.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
         c.execute(''' SELECT * FROM favorites''')
-        favTableLen = len(c.fetchall())
+        favTableLen = len(c.fetchall())       
         self.favoritesTable.setRowCount(favTableLen)
         self.favoritesTable.setHorizontalHeaderLabels(['Article','Date'])
-        self.tabs.addTab(self.Favorites, "") 
-        MainWindow.setCentralWidget(self.verticalLayoutWidget)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
-        self.retranslateUi(MainWindow)
-        self.tabs.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.favoritesVerticalLayout.addWidget(self.favoritesTable)
+        self.tabWidget.addTab(self.favoritesTab, "")
+        self.gridLayout.addWidget(self.tabWidget, 3, 0, 1, 1)
+        self.headingLabel = QtWidgets.QLabel(self.gridLayoutWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(1)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.headingLabel.sizePolicy().hasHeightForWidth())
+        self.headingLabel.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        font.setBold(True)
+        font.setWeight(75)
+        self.headingLabel.setFont(font)
+        self.headingLabel.setObjectName("headingLabel")
+        self.gridLayout.addWidget(self.headingLabel, 1, 0, 1, 1, QtCore.Qt.AlignLeft)
+        self.refreshButton = QtWidgets.QPushButton(self.gridLayoutWidget)
+        self.refreshButton.setObjectName("refreshButton")
+        self.refreshButton.clicked.connect(self.refresh_command)
+        self.gridLayout.addWidget(self.refreshButton, 2, 0, 1, 1, QtCore.Qt.AlignLeft)
         
         # Populate the all table
         rowPosition = 0 
@@ -202,11 +228,14 @@ class Ui_MainWindow(object):
         self.allTable.cellDoubleClicked.connect(self.open_link)  # connects to open_link function
         self.allTable.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers) # make table cells non-editable
         self.favoritesTable.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.tabs.resize(1200, 1000)
+
+        self.retranslateUi(Form)
+        self.tabWidget.setCurrentIndex(0)
+        QtCore.QMetaObject.connectSlotsByName(Form)
 
     def open_link(self, row, column):
         item = self.allTable.item(row,column)
-        itemTxt = item.text()
+        itemTxt = item.text() 
         c.execute('SELECT links FROM main WHERE titles = (?)', (itemTxt,))
         result = c.fetchall()
         url = result[0][0]
@@ -214,26 +243,20 @@ class Ui_MainWindow(object):
 
     def refresh_command(self):
         update_database()
-        
-    def retranslateUi(self, MainWindow):
+
+    def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Hedge Fund Insights"))
-        self.headingLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:16pt;\">Hedge Fund Insights</span></p></body></html>"))
-        self.headingLabel.adjustSize()
-        self.refreshButton.setText(_translate("MainWindow", "Refresh"))
-        self.tabs.setTabText(self.tabs.indexOf(self.All), _translate("MainWindow", "All"))
-        self.tabs.setTabText(self.tabs.indexOf(self.Favorites), _translate("MainWindow", "Favorites"))
-        self.descriptionLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:10pt;\">Double click the article title to visit the page.\
-            To add an article to the favorites tab, right click and select 'Add to Favorites' </span></p></body></html>"))
+        Form.setWindowTitle(_translate("Form", "Form"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.allTab), _translate("Form", "All"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.favoritesTab), _translate("Form", "Favorites"))
+        self.headingLabel.setText(_translate("Form", "Hedge Fund Insights"))
+        self.refreshButton.setText(_translate("Form", "Refresh"))
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    screen = app.primaryScreen()
-    size = screen.size()
-    rect = screen.availableGeometry()
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
+    Form = QtWidgets.QWidget()
+    ui = Ui_Form()
+    ui.setupUi(Form)
+    Form.show()
     sys.exit(app.exec_())
