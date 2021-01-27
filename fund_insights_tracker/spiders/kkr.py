@@ -44,10 +44,22 @@ class KkrSpider(scrapy.Spider):
             if len(i) > 2:
                 secondListNew.append(i)
         secondListNew.insert(0,firstEntry)
-        #dates_list = firstListNew + secondListNew
+
+        # Combine data into tuples
+
+        kkr_item = []
+        for i in range(len(titles)):
+            tupTitle = titles[i]
+            tupLink = links[i]
+            tupDate = secondListNew[i]
+            tup = (tupTitle, tupLink, tupDate)
+            kkr_item.append(tup)
+
         
-        items['kkr_titles'] = titles
-        items['kkr_links'] = links
-        items['kkr_dates'] = secondListNew
+        #items['kkr_titles'] = titles
+        #items['kkr_links'] = links
+        #items['kkr_dates'] = secondListNew
+
+        items['kkr_item'] = kkr_item
 
         yield items

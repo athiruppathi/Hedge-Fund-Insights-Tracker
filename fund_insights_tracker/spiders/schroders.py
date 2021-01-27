@@ -32,4 +32,3 @@ class SchrodersSpider(scrapy.Spider):
         items['schroders_links'] = absolute_url_list
         items['schroders_dates'] = dates_list
         yield items
-        

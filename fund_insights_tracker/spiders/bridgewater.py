@@ -30,8 +30,15 @@ class BridgewaterSpider(scrapy.Spider):
         for i in range(len(titles_list)):
             dates.append('---')
 
-        items['bridgewater_titles'] = titles_list
-        items['bridgewater_links'] = links_list
-        items['bridgewater_dates'] = dates
+
+        bridgewater_item = []
+        for i in range(len(titles_list)):
+            tupTitle = titles_list[i]
+            tupLink = links_list[i]
+            tupDate = dates[i]
+            tup = (tupTitle, tupLink, tupDate)
+            bridgewater_item.append(tup)
+
+        items['bridgewater_item'] = bridgewater_item
 
         yield items

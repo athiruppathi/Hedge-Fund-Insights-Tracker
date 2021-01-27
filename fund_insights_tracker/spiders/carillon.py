@@ -26,9 +26,17 @@ class CarillonSpider(scrapy.Spider):
         dates = []
         for i in range(len(titles)):
             dates.append('---')
-        
-        items['carillon_titles'] = titles
-        items['carillon_links'] = absolute_url_list
-        items['carillon_dates'] = dates
+
+
+        # Combine data into tuples
+        carillon_item = []
+        for i in range(len(titles)):
+            tupTitle = titles[i]
+            tupLink = absolute_url_list[i]
+            tupDate = dates[i]
+            tup = (tupTitle, tupLink, tupDate)
+            carillon_item.append(tup)
+
+        items['carillon_item'] = carillon_item
 
         yield items

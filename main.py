@@ -30,6 +30,9 @@ c.execute('''CREATE TABLE IF NOT EXISTS favorites (
     dates text
 )''')
 
+c.execute('SELECT * FROM main')
+print(c.fetchall()[0])
+
 def get_path(dataName):
     '''Gets the directory path of the scraped json data. Must 
     call the function with dataName as a string'''
