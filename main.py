@@ -7,6 +7,8 @@ import re
 import webbrowser
 from fund_insights_tracker.spiders import blackrock, bridgewater, carillon, kkr, man, pimco, schroders, twosigma, williamblair
 from scrapy.crawler import CrawlerProcess
+from scrapy.settings import Settings
+from fund_insights_tracker import settings as my_settings
 import tkinter as tk
 
 root = tk.Tk()
@@ -30,104 +32,19 @@ c.execute('''CREATE TABLE IF NOT EXISTS favorites (
     dates text
 )''')
 
-c.execute('SELECT * FROM main')
-print(c.fetchall()[0])
-
-def get_path(dataName):
-    '''Gets the directory path of the scraped json data. Must 
-    call the function with dataName as a string'''
-    currentDirectory = os.getcwd()
-    partialPath = '\\' + dataName + '_data.json'
-    fullPath = currentDirectory + partialPath
-    return fullPath
-
-def crawl_all():
-    '''Crawls all websites'''
-    process = CrawlerProcess()
-    process.crawl(blackrock.BlackrockSpider)
-    process.crawl(bridgewater.BridgewaterSpider)
-    process.crawl(carillon.CarillonSpider)
-    process.crawl(kkr.KkrSpider)
-    process.crawl(man.ManSpider)
-    process.crawl(pimco.PimcoSpider)    
-    process.crawl(schroders.SchrodersSpider)    
-    process.crawl(twosigma.TwosigmaSpider)  
-    process.crawl(williamblair.WilliamblairSpider)  
-    process.start()     
-
-def update_database():
-    '''imports data, updates the master database with new entries, 
-    and deletes the imported json files'''
-    
-    # Delete old data if it exists
-    fundsList = ['blackrock','bridgewater','carillon',  'kkr','man','pimco','schroders','twosigma','williamblair']
-    for i in fundsList:
-        if os.path.isfile(get_path(i)) == True:
-            os.remove(get_path(i))
-
-    crawl_all()
-
-    # Import Data
-    pathsList = []
-    for i in fundsList:
-        pathsList.append(get_path(i)) 
-
-    dataTitles = []
-    dataLinks = []
-    dataDates = []
-    for i in pathsList:
-        with open(i) as f:
-            data = json.load(f) # load json data
-            dataDict = data[0]
-            dictToList = list(dataDict.keys())
-            titlesIndex = dictToList[0]
-            dataName = titlesIndex[:-7] # get the name of fund to access dictionary
-
-            dataT = dataDict.get( dataName + '_titles')
-            dataTitles.append(dataT)
-            dataL = dataDict.get(dataName + '_links')
-            dataLinks.append(dataL)
-            dataD = dataDict.get(dataName + '_dates')
-            dataDates.append(dataD)
-    
-    #print(dataTitles[-1])
-    dataTitles1 = []
-    for i in dataTitles:
-        for j in i:
-            if j not in dataTitles1:
-                dataTitles1.append(j)
-    dataLinks1 = []
-    for i in dataLinks:
-        for j in i:
-            if j not in dataLinks1:
-                dataLinks1.append(j)
-    dataDates1 = []
-    for i in dataDates:
-        for j in i:
-            dataDates1.append(j)
-    
-    # Covert data into a list of tuples
-    completeList = []
-    for i in range(len(dataTitles1)):
-        titleNew = dataTitles1[i]
-        linkNew = dataLinks1[i]
-        linksPattern = re.compile('<Request GET ')
-        isPatternMatch = re.match('<Request GET ', linkNew)
-        if isPatternMatch:
-            linkNew = linksPattern.sub('', linkNew)
-            linkNew = linkNew[:-1]
-        dateNew = dataDates1[i]
-        tup = (titleNew,linkNew,dateNew)
-        completeList.append(tup)
-
-    # Add data to main data table
-    c.executemany('INSERT INTO main VALUES (?,?,?)', completeList)
-    c.execute('DELETE FROM main WHERE rowid NOT IN (SELECT min(rowid) FROM main GROUP BY titles, links)')
-    conn.commit()
-
-    # Remove old files 
-    for i in fundsList:
-       os.remove(get_path(i))
+crawler_settings = Settings()
+crawler_settings.setmodule(my_settings)
+process = CrawlerProcess(settings=crawler_settings)
+process.crawl(blackrock.BlackrockSpider)
+process.crawl(bridgewater.BridgewaterSpider)
+process.crawl(carillon.CarillonSpider)
+process.crawl(kkr.KkrSpider)
+process.crawl(man.ManSpider)
+process.crawl(pimco.PimcoSpider)    
+process.crawl(schroders.SchrodersSpider)    
+process.crawl(twosigma.TwosigmaSpider)  
+process.crawl(williamblair.WilliamblairSpider)    
+process.start()
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -218,7 +135,7 @@ class Ui_Form(object):
         self.refreshButton.setObjectName("refreshButton")
         self.refreshButton.clicked.connect(self.refresh_command)
         self.gridLayout.addWidget(self.refreshButton, 2, 0, 1, 1, QtCore.Qt.AlignLeft)
-        
+
         # Populate the all table
         rowPosition = 0 
         for i in c.execute(''' SELECT * FROM main'''):
@@ -238,7 +155,7 @@ class Ui_Form(object):
 
     def open_link(self, row, column):
         item = self.allTable.item(row,column)
-        itemTxt = item.text() 
+        itemTxt = item.text()
         c.execute('SELECT links FROM main WHERE titles = (?)', (itemTxt,))
         result = c.fetchall()
         url = result[0][0]

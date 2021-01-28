@@ -6,10 +6,6 @@ import re
 class BlackrockSpider(scrapy.Spider):
     name = 'blackrock'
     start_urls = ['https://www.blackrock.com/us/individual/insights']
-    custom_settings = {
-        'FEED_FORMAT':'json',
-        'FEED_URI':'blackrock_data.json'
-    }
 
     def parse(self, response):
 

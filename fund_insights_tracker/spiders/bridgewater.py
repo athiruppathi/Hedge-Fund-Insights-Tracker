@@ -6,11 +6,6 @@ class BridgewaterSpider(scrapy.Spider):
     name = 'bridgewater'
     start_urls = ['https://www.bridgewater.com/research-and-insights']
 
-    custom_settings = {
-        'FEED_FORMAT':'json',
-        'FEED_URI':'bridgewater_data.json'
-    }
-
     def parse(self, response):
 
         items = FundInsightsTrackerItem()

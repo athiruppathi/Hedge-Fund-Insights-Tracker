@@ -6,11 +6,6 @@ class WilliamblairSpider(scrapy.Spider):
     name = 'williamblair'
     start_urls = ['https://www.williamblair.com/Research-and-Insights/Insights/Equity-Research.aspx']
 
-    custom_settings = {
-        'FEED_FORMAT':'json',
-        'FEED_URI':'williamblair_data.json'
-    }
-
     def parse(self, response):
         items = FundInsightsTrackerItem()
 
@@ -25,10 +20,17 @@ class WilliamblairSpider(scrapy.Spider):
         dates = []
         for i in range(len(titles)):
             dates.append('---')
-        
-        items['williamblair_titles'] = titles
-        items['williamblair_links'] = absolute_url_list
-        items['williamblair_dates'] = dates
+
+        # Combine data into tuples
+        williamblair_item = []
+        for i in range(len(titles)):
+            tupTitle = titles[i]
+            tupLink = absolute_url_list[i]
+            tupDate = dates[i]
+            tup = (tupTitle, tupLink, tupDate)
+            williamblair_item.append(tup)
+
+        items['williamblair_item'] = williamblair_item
 
         yield items
 

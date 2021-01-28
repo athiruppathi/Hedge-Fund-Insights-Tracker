@@ -6,11 +6,6 @@ class TwosigmaSpider(scrapy.Spider):
     name = 'twosigma'
     start_urls = ['https://www.twosigma.com/topic/markets-economy/']
 
-    custom_settings = {
-        'FEED_FORMAT':'json',
-        'FEED_URI':'twosigma_data.json'
-    }
-
     def parse(self, response):
         items = FundInsightsTrackerItem()
         
@@ -22,7 +17,15 @@ class TwosigmaSpider(scrapy.Spider):
         for i in range(len(titles)):
             dates.append('---')
 
-        items['twosigma_titles'] = titles
-        items['twosigma_links'] = links
-        items['twosigma_dates'] = dates
+        # Combine data into tuples
+        twosigma_item = []
+        for i in range(len(titles)):
+            tupTitle = titles[i]
+            tupLink = links[i]
+            tupDate = dates[i]
+            tup = (tupTitle, tupLink, tupDate)
+            twosigma_item.append(tup)
+
+        items['twosigma_item'] = twosigma_item
+        
         yield items

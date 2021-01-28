@@ -6,10 +6,6 @@ import re
 class ManSpider(scrapy.Spider):
     name = 'man'
     start_urls = ['https://www.man.com/maninstitute/']
-    custom_settings = {
-        'FEED_FORMAT':'json',
-        'FEED_URI':'man_data.json'
-    }
 
     def parse(self, response):
         items = FundInsightsTrackerItem()

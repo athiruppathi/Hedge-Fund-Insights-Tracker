@@ -6,11 +6,6 @@ class SchrodersSpider(scrapy.Spider):
     name = 'schroders'
     start_urls = ['https://www.schroders.com/en/insights/']
 
-    custom_settings = {
-        'FEED_FORMAT':'json',
-        'FEED_URI':'schroders_data.json'
-    }
-
     def parse(self, response):
         items = FundInsightsTrackerItem()
 
@@ -27,8 +22,16 @@ class SchrodersSpider(scrapy.Spider):
             absolute_url = response.follow(link, callback=self.parse)
             absolute_url_list.append(absolute_url)
         absolute_url_list = absolute_url_list[4:-11]
-        
-        items['schroders_titles'] = titles_list
-        items['schroders_links'] = absolute_url_list
-        items['schroders_dates'] = dates_list
+
+        # Combine data into tuples
+        schroders_item = []
+        for i in range(len(titles_list)):
+            tupTitle = titles_list[i]
+            tupLink = absolute_url_list[i]
+            tupDate = dates_list[i]
+            tup = (tupTitle, tupLink, tupDate)
+            schroders_item.append(tup)
+
+        items['schroders_item'] = schroders_item
+
         yield items

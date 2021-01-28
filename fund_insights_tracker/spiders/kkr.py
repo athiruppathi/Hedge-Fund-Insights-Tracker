@@ -6,11 +6,6 @@ import re
 class KkrSpider(scrapy.Spider):
     name = 'kkr'
     start_urls = ['https://www.kkr.com/global-perspectives/publications']
-    custom_settings = {
-        'FEED_FORMAT':'json',
-        'FEED_URI':'kkr_data.json'
-    }
-
 
 
     def parse(self, response):
@@ -46,7 +41,6 @@ class KkrSpider(scrapy.Spider):
         secondListNew.insert(0,firstEntry)
 
         # Combine data into tuples
-
         kkr_item = []
         for i in range(len(titles)):
             tupTitle = titles[i]

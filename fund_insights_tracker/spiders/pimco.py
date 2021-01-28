@@ -6,10 +6,6 @@ import re
 class PimcoSpider(scrapy.Spider):
     name = 'pimco'
     start_urls = ['https://www.pimco.com/en-us/insights']
-    custom_settings = {
-        'FEED_FORMAT':'json',
-        'FEED_URI':'pimco_data.json'
-    }
 
     def parse(self, response):
         items = FundInsightsTrackerItem()
@@ -33,27 +29,16 @@ class PimcoSpider(scrapy.Spider):
         for i in titles:
             if i not in titles_list:
                 titles_list.append(i)
-        
-        # Links Data Cleaning
-        #linksRemovalList = [absolute_url_list[0],absolute_url_list[2],absolute_url_list[4],absolute_url_list[6],absolute_url_list[8]]
 
-        # Dates Data Cleaning
-        # datePattern1 = re.compile('<time>')
-        # datePattern2 = re.compile('</time>')
+        # Combine data into tuples
+        pimco_item = []
+        for i in range(len(titles_list)):
+            tupTitle = titles_list[i]
+            tupLink = absolute_url_list[i]
+            tupDate = datesFinal[i]
+            tup = (tupTitle, tupLink, tupDate)
+            pimco_item.append(tup)
 
-        # dates_v1 = []
-        # for i in dates:
-        #     i = re.sub(datePattern1,'',i)
-        #     dates_v1.append(i)
+        items['pimco_item'] = pimco_item
         
-        # dates_v2 = []
-        # for j in dates_v1:
-        #     j = re.sub(datePattern2,'',j)
-        #     dates_v2.append(j)
-    
-        items['pimco_titles'] = titles_list
-        items['pimco_links'] = absolute_url_list
-        items['pimco_dates'] = datesFinal
-        
-
         yield items

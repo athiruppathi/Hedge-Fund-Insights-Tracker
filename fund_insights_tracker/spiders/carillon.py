@@ -5,10 +5,6 @@ from urllib.parse import urljoin
 class CarillonSpider(scrapy.Spider):
     name = 'carillon'
     start_urls = ['https://www.carillontower.com/our-thinking']
-    custom_settings = {
-        'FEED_FORMAT':'json',
-        'FEED_URI':'carillon_data.json'
-    }
 
     def parse(self, response):
         items = FundInsightsTrackerItem()
