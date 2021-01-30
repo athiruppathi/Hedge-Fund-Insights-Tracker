@@ -1,6 +1,7 @@
 import scrapy
 from ..items import FundInsightsTrackerItem
 from urllib.parse import urljoin
+import re
 
 class WilliamblairSpider(scrapy.Spider):
     name = 'williamblair'
@@ -18,15 +19,22 @@ class WilliamblairSpider(scrapy.Spider):
             absolute_url_list.append(absolute_url)
 
         dates = []
-        for i in range(len(titles)):
-            dates.append('---')
+        for i in titles:
+            splitDates = i.split('|')
+            dates.append(splitDates)
+        
+
+        datesFinal = []
+        for i in dates:
+            finalDate = i[1]
+            datesFinal.append(finalDate)
 
         # Combine data into tuples
         williamblair_item = []
         for i in range(len(titles)):
             tupTitle = titles[i]
             tupLink = absolute_url_list[i]
-            tupDate = dates[i]
+            tupDate = datesFinal[i]
             tup = (tupTitle, tupLink, tupDate)
             williamblair_item.append(tup)
 

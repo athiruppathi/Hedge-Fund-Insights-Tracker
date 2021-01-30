@@ -18,12 +18,12 @@ class BridgewaterSpider(scrapy.Spider):
         links = entry.xpath('.//*[@class="PromoC-title"]/a/@href')
         links_list = links[:10].extract()
         
-        #dates = entry.xpath('.//*[@class="PromoC-date"]/text()')
+        dates = entry.xpath('.//*[@class="PromoC-date"]/text()').extract()
         #dates_list = dates[:10].extract()
 
-        dates = []
-        for i in range(len(titles_list)):
-            dates.append('---')
+        # dates = []
+        # for i in range(len(titles_list)):
+        #     dates.append('---')
 
 
         bridgewater_item = []
@@ -35,5 +35,6 @@ class BridgewaterSpider(scrapy.Spider):
             bridgewater_item.append(tup)
 
         items['bridgewater_item'] = bridgewater_item
+
 
         yield items

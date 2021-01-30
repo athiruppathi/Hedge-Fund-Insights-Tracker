@@ -7,6 +7,7 @@
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 import sqlite3
+import re
 
 conn = sqlite3.connect('master.db')
 c = conn.cursor()
@@ -31,7 +32,9 @@ class FundInsightsTrackerPipeline:
                 for i in range(len(itemResult)):
                     itemTitle = itemResult[i][0]
                     if itemTitle not in titleCheckList:
-                        itemLink = itemResult[i][1]
+                        itemLink = str(itemResult[i][1])
+                        if bool(re.search(re.compile('<GET '),itemLink)) == True:
+                            itemLink = itemLink[5:-1]
                         itemDate = itemResult[i][2]
                         c.execute('INSERT INTO main VALUES (?,?,?)', (str(itemTitle),str(itemLink),str(itemDate)))
                         conn.commit()
@@ -40,4 +43,3 @@ class FundInsightsTrackerPipeline:
                         print('not added to database')
             except:
                 pass
-        

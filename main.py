@@ -32,6 +32,8 @@ c.execute('''CREATE TABLE IF NOT EXISTS favorites (
     dates text
 )''')
 
+conn.commit()
+
 crawler_settings = Settings()
 crawler_settings.setmodule(my_settings)
 process = CrawlerProcess(settings=crawler_settings)
@@ -45,6 +47,10 @@ process.crawl(schroders.SchrodersSpider)
 process.crawl(twosigma.TwosigmaSpider)  
 process.crawl(williamblair.WilliamblairSpider)    
 process.start()
+
+
+#========================================================================================================================================
+
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
