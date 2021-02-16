@@ -32,6 +32,11 @@ c.execute('''CREATE TABLE IF NOT EXISTS favorites (
     dates text
 )''')
 
+def sort_table():
+    c.execute('SELECT (dates) FROM main')
+    dates = c.fetchall()
+
+
 conn.commit()
 
 crawler_settings = Settings()
@@ -48,8 +53,9 @@ process.crawl(twosigma.TwosigmaSpider)
 process.crawl(williamblair.WilliamblairSpider)    
 process.start()
 
+#sort_table()
 
-#========================================================================================================================================
+#==============================================================================================================================================
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -137,10 +143,10 @@ class Ui_Form(object):
         self.headingLabel.setFont(font)
         self.headingLabel.setObjectName("headingLabel")
         self.gridLayout.addWidget(self.headingLabel, 1, 0, 1, 1, QtCore.Qt.AlignLeft)
-        self.refreshButton = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.refreshButton.setObjectName("refreshButton")
-        self.refreshButton.clicked.connect(self.refresh_command)
-        self.gridLayout.addWidget(self.refreshButton, 2, 0, 1, 1, QtCore.Qt.AlignLeft)
+        # self.refreshButton = QtWidgets.QPushButton(self.gridLayoutWidget)
+        # self.refreshButton.setObjectName("refreshButton")
+        # self.refreshButton.clicked.connect(self.refresh_command)
+        # self.gridLayout.addWidget(self.refreshButton, 2, 0, 1, 1, QtCore.Qt.AlignLeft)
 
         # Populate the all table
         rowPosition = 0 
@@ -167,8 +173,8 @@ class Ui_Form(object):
         url = result[0][0]
         webbrowser.open(url, new=0)
 
-    def refresh_command(self):
-        update_database()
+    # def refresh_command(self):
+    #     update_database()
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
@@ -176,7 +182,7 @@ class Ui_Form(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.allTab), _translate("Form", "All"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.favoritesTab), _translate("Form", "Favorites"))
         self.headingLabel.setText(_translate("Form", "Hedge Fund Insights"))
-        self.refreshButton.setText(_translate("Form", "Refresh"))
+        # self.refreshButton.setText(_translate("Form", "Refresh"))
 
 if __name__ == "__main__":
     import sys
