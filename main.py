@@ -5,7 +5,7 @@ import sqlite3
 import os 
 import re 
 import webbrowser
-from fund_insights_tracker.spiders import blackrock, bridgewater, carillon, kkr, man, pimco, schroders, twosigma, williamblair
+from fund_insights_tracker.spiders import aqr, blackrock, bridgewater, kkr, man, pimco, schroders, twosigma, williamblair
 from scrapy.crawler import CrawlerProcess
 from scrapy.settings import Settings
 from fund_insights_tracker import settings as my_settings
@@ -42,9 +42,9 @@ conn.commit()
 crawler_settings = Settings()
 crawler_settings.setmodule(my_settings)
 process = CrawlerProcess(settings=crawler_settings)
+process.crawl(aqr.AqrSpider)
 process.crawl(blackrock.BlackrockSpider)
 process.crawl(bridgewater.BridgewaterSpider)
-process.crawl(carillon.CarillonSpider)
 process.crawl(kkr.KkrSpider)
 process.crawl(man.ManSpider)
 process.crawl(pimco.PimcoSpider)    

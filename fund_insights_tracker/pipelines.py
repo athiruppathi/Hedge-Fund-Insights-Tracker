@@ -25,7 +25,7 @@ class FundInsightsTrackerPipeline:
             dbTitle = dbResult[i][0]
             titleCheckList.append(dbTitle)
 
-        itemList = ['blackrock_item','bridgewater_item','carillon_item','kkr_item','man_item','pimco_item','schroders_item','twosigma_item','williamblair_item']
+        itemList = ['blackrock_item','bridgewater_item','aqr_item','kkr_item','man_item','pimco_item','schroders_item','twosigma_item','williamblair_item']
         for i in itemList:
             try:
                 itemResult = adapter.get(i)

@@ -8,9 +8,9 @@ import scrapy
 class FundInsightsTrackerItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
+    aqr_item = scrapy.Field()
     blackrock_item = scrapy.Field()
     bridgewater_item = scrapy.Field()
-    carillon_item = scrapy.Field()
     kkr_item = scrapy.Field()
     man_item = scrapy.Field()
     pimco_item = scrapy.Field()

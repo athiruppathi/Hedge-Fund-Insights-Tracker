@@ -22,6 +22,9 @@ class BlackrockSpider(scrapy.Spider):
             absolute_url = response.follow(link, callback=self.parse)
             absolute_url_list.append(absolute_url)
 
+        links = entry.xpath('.//*[@class="cta-container-box"]/a/@href').extract()
+        links_list = links[:6]
+
         # Dates Data Cleaning
         dates = entry.xpath('.//*[@class="attribution-text"]/span[1]/text()')
         dates_list = dates[:6].extract()
@@ -38,7 +41,7 @@ class BlackrockSpider(scrapy.Spider):
         blackrock_item = []
         for i in range(len(titles_list_new)):
             tupTitle = titles_list_new[i]
-            tupLink = absolute_url_list[i]
+            tupLink = links_list[i]
             tupDate = dates_list[i]
             tup = (tupTitle, tupLink, tupDate)
             blackrock_item.append(tup)
