@@ -5,35 +5,42 @@ import re
 
 class WilliamblairSpider(scrapy.Spider):
     name = 'williamblair'
-    start_urls = ['https://www.williamblair.com/Research-and-Insights/Insights/Equity-Research.aspx']
+    start_urls = ['https://active.williamblair.com/insights/blog/']
 
     def parse(self, response):
         items = FundInsightsTrackerItem()
 
-        entry = response.xpath('//*[@class="content-area"]')
-        titles = entry.xpath('.//div/a/text()').extract()
-        links = entry.xpath('.//div/a/@href').extract()
-        absolute_url_list = []
-        for i in links:
-            absolute_url = response.follow(i, callback=self.parse)
-            absolute_url_list.append(absolute_url)
+        # First article
+        firstTitle = response.xpath('//*[@class="et_pb_text_inner"]/h2/text()').extract_first()
+        firstLink = response.xpath('//*[@class="et_pb_text_inner"]/a/@href').extract_first()
+        firstDate = response.xpath('//*[@class="et_pb_text_inner"]/text()').extract_first()
 
-        dates = []
+        #print(firstTitle, firstLink, firstDate)
+        # Rest of articles
+        entry = response.css('.et_pb_module_inner')
+        titles = entry.xpath('.//*[@class="blogtopblock"]/a/text()').extract()   
+        links = entry.xpath('.//*[@class="blogtopblock"]/a/@href').extract()
+        dates = entry.xpath('.//*[@class="publisheddate"]/text()').extract() 
+
+        # Data Cleaning
+        titlesFinal = []
         for i in titles:
-            splitDates = i.split('|')
-            dates.append(splitDates)
-        
-
+            if i not in titlesFinal:
+                titlesFinal.append(i)
+        linksFinal = []
+        for i in links:
+            if i not in linksFinal:
+                linksFinal.append(i)
         datesFinal = []
         for i in dates:
-            finalDate = i[1]
-            datesFinal.append(finalDate)
+            if i not in datesFinal:
+                datesFinal.append(i)
 
         # Combine data into tuples
         williamblair_item = []
-        for i in range(len(titles)):
-            tupTitle = titles[i]
-            tupLink = absolute_url_list[i]
+        for i in range(len(titlesFinal)):
+            tupTitle = titlesFinal[i]
+            tupLink = linksFinal[i]
             tupDate = datesFinal[i]
             tup = (tupTitle, tupLink, tupDate)
             williamblair_item.append(tup)
