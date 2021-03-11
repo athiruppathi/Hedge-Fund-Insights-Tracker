@@ -10,12 +10,6 @@ class WilliamblairSpider(scrapy.Spider):
     def parse(self, response):
         items = FundInsightsTrackerItem()
 
-        # First article
-        firstTitle = response.xpath('//*[@class="et_pb_text_inner"]/h2/text()').extract_first()
-        firstLink = response.xpath('//*[@class="et_pb_text_inner"]/a/@href').extract_first()
-        firstDate = response.xpath('//*[@class="et_pb_text_inner"]/text()').extract_first()
-
-        #print(firstTitle, firstLink, firstDate)
         # Rest of articles
         entry = response.css('.et_pb_module_inner')
         titles = entry.xpath('.//*[@class="blogtopblock"]/a/text()').extract()   

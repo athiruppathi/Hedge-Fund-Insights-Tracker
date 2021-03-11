@@ -39,6 +39,7 @@ def sort_table():
 
 conn.commit()
 
+
 crawler_settings = Settings()
 crawler_settings.setmodule(my_settings)
 process = CrawlerProcess(settings=crawler_settings)
@@ -192,3 +193,5 @@ if __name__ == "__main__":
     ui.setupUi(Form)
     Form.show()
     sys.exit(app.exec_())
+
+conn.close()
